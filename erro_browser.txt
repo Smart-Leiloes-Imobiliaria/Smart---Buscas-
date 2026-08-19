@@ -1,0 +1,48 @@
+1. Iniciando script...
+2. Criando Chrome...
+Traceback (most recent call last):
+  File "/home/gabrielrodrigues/Projeto - Busca de Imóveis /test_browser.py", line 11, in <module>
+    driver = uc.Chrome(
+             ^^^^^^^^^^
+  File "/home/gabrielrodrigues/Projeto - Busca de Imóveis /.venv/lib/python3.11/site-packages/undetected_chromedriver/__init__.py", line 466, in __init__
+    super(Chrome, self).__init__(
+  File "/home/gabrielrodrigues/Projeto - Busca de Imóveis /.venv/lib/python3.11/site-packages/selenium/webdriver/chrome/webdriver.py", line 45, in __init__
+    super().__init__(
+  File "/home/gabrielrodrigues/Projeto - Busca de Imóveis /.venv/lib/python3.11/site-packages/selenium/webdriver/chromium/webdriver.py", line 66, in __init__
+    super().__init__(command_executor=executor, options=self.options)
+  File "/home/gabrielrodrigues/Projeto - Busca de Imóveis /.venv/lib/python3.11/site-packages/selenium/webdriver/common/webdriver.py", line 25, in __init__
+    super().__init__(*args, **kwargs)
+  File "/home/gabrielrodrigues/Projeto - Busca de Imóveis /.venv/lib/python3.11/site-packages/selenium/webdriver/remote/webdriver.py", line 300, in __init__
+    self.start_session(capabilities)
+  File "/home/gabrielrodrigues/Projeto - Busca de Imóveis /.venv/lib/python3.11/site-packages/undetected_chromedriver/__init__.py", line 724, in start_session
+    super(selenium.webdriver.chrome.webdriver.WebDriver, self).start_session(
+  File "/home/gabrielrodrigues/Projeto - Busca de Imóveis /.venv/lib/python3.11/site-packages/selenium/webdriver/remote/webdriver.py", line 399, in start_session
+    response = self.execute(Command.NEW_SESSION, caps)["value"]
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/gabrielrodrigues/Projeto - Busca de Imóveis /.venv/lib/python3.11/site-packages/selenium/webdriver/remote/webdriver.py", line 504, in execute
+    self.error_handler.check_response(response)
+  File "/home/gabrielrodrigues/Projeto - Busca de Imóveis /.venv/lib/python3.11/site-packages/selenium/webdriver/remote/errorhandler.py", line 232, in check_response
+    raise exception_class(message, screen, stacktrace)
+selenium.common.exceptions.SessionNotCreatedException: Message: session not created: cannot connect to chrome at 127.0.0.1:42513
+from session not created: This version of ChromeDriver only supports Chrome version 152
+Current browser version is 151.0.7922.137; For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#sessionnotcreatedexception
+Stacktrace:
+#0 0x55e978a412ca <unknown>
+#1 0x55e9783a4b39 <unknown>
+#2 0x55e9783eb07f <unknown>
+#3 0x55e9783e9e33 <unknown>
+#4 0x55e9783dedaf <unknown>
+#5 0x55e97842ed3e <unknown>
+#6 0x55e97842e42c <unknown>
+#7 0x55e9783edecb <unknown>
+#8 0x55e9783eecb1 <unknown>
+#9 0x55e978a057f0 <unknown>
+#10 0x55e978a03e6a <unknown>
+#11 0x55e9789eebb5 <unknown>
+#12 0x55e978a04b2a <unknown>
+#13 0x55e9789d7df0 <unknown>
+#14 0x55e978a2c238 <unknown>
+#15 0x55e978a2c3d5 <unknown>
+#16 0x55e978a3fe53 <unknown>
+#17 0x7fb80dfa6b7b <unknown>
+

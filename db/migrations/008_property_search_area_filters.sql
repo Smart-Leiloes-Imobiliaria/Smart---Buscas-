@@ -1,0 +1,5 @@
+ALTER TABLE property_searches
+ADD COLUMN IF NOT EXISTS min_area NUMERIC;
+
+ALTER TABLE property_searches
+ADD COLUMN IF NOT EXISTS max_area NUMERIC;

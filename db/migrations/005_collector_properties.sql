@@ -1,0 +1,65 @@
+CREATE TABLE IF NOT EXISTS properties (
+    id BIGSERIAL PRIMARY KEY,
+    source TEXT NOT NULL,
+    source_id TEXT NOT NULL,
+    title TEXT,
+    advertiser_name TEXT,
+    description TEXT,
+    sale_price NUMERIC,
+    rental_price NUMERIC,
+    city TEXT,
+    state TEXT,
+    neighborhood TEXT,
+    street TEXT,
+    bedrooms INTEGER,
+    bathrooms INTEGER,
+    suites INTEGER,
+    parking_spaces INTEGER,
+    usable_area NUMERIC,
+    total_area NUMERIC,
+    condominium_fee NUMERIC,
+    iptu NUMERIC,
+    property_type TEXT,
+    image_url TEXT,
+    image_urls JSONB,
+    url TEXT NOT NULL,
+    country TEXT,
+    date_posted TIMESTAMPTZ,
+    status TEXT NOT NULL DEFAULT 'ACTIVE',
+    first_seen_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_seen_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (source, source_id)
+);
+
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS title TEXT;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS advertiser_name TEXT;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS sale_price NUMERIC;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS rental_price NUMERIC;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS city TEXT;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS state TEXT;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS neighborhood TEXT;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS street TEXT;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS bedrooms INTEGER;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS bathrooms INTEGER;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS suites INTEGER;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS parking_spaces INTEGER;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS usable_area NUMERIC;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS total_area NUMERIC;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS condominium_fee NUMERIC;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS iptu NUMERIC;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS property_type TEXT;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS image_url TEXT;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS image_urls JSONB;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS country TEXT;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS date_posted TIMESTAMPTZ;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'ACTIVE';
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS first_seen_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP;
+
+CREATE INDEX IF NOT EXISTS idx_properties_status_updated
+ON properties (status, updated_at DESC);

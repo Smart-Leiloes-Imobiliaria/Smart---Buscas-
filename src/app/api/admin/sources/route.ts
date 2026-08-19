@@ -1,0 +1,17 @@
+import { NextResponse } from "next/server";
+
+import { apiError } from "@/lib/api";
+import { db } from "@/lib/db";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
+export async function GET() {
+  try {
+    return NextResponse.json({
+      items: (await (await db()).query("SELECT * FROM source ORDER BY priority DESC")).rows,
+    });
+  } catch (error) {
+    return apiError(error);
+  }
+}

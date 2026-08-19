@@ -1,0 +1,43 @@
+{
+  "userAgent": "MoradaCollector/1.0",
+  "contact": "contato@seu-dominio.com.br",
+  "sources": [
+    {
+      "code": "zap",
+      "allowedHosts": ["catalogo-autorizado.example"],
+      "requestDelayMs": 1500,
+      "timeoutMs": 20000,
+      "maxResponseBytes": 5000000,
+      "suspiciousDropRatio": 0.7,
+      "minimumBaselineForDropDetection": 10,
+      "scopes": [
+        {
+          "key": "bh-venda",
+          "searchUrl": "https://catalogo-autorizado.example/imoveis/belo-horizonte?page={page}",
+          "pageStart": 1,
+          "maxPages": 30,
+          "transaction": "SALE",
+          "city": "Belo Horizonte",
+          "state": "MG",
+          "neighborhoods": [],
+          "propertyType": "APARTMENT",
+          "parser": "AUTO",
+          "selectors": {
+            "card": ".property-card",
+            "externalId": { "selector": ":scope", "attribute": "data-id" },
+            "title": ".property-title",
+            "description": ".property-description",
+            "url": { "selector": "a.property-link", "attribute": "href" },
+            "salePrice": ".property-price",
+            "neighborhood": ".property-neighborhood",
+            "bedrooms": ".property-bedrooms",
+            "bathrooms": ".property-bathrooms",
+            "parkingSpaces": ".property-parking",
+            "usableArea": ".property-area",
+            "imageUrl": { "selector": "img", "attribute": "src" }
+          }
+        }
+      ]
+    }
+  ]
+}
