@@ -22,10 +22,20 @@ imediatamente das próximas coletas, sem precisar reiniciar o worker.
 
 ## Desenvolvimento local
 
-Inicie o Next.js e o worker em terminais diferentes:
+Para iniciar o banco, Next.js e o worker juntos:
 
 ```bash
+npm run db:start
+npm run db:migrate
 npm run dev
+```
+
+`npm run dev` inicia o worker em modo headless, evitando buscas presas em
+`PENDING`. Para executar somente a interface, use `npm run dev:web`. Também é
+possível iniciar os processos em terminais diferentes:
+
+```bash
+npm run dev:web
 npm run collector:worker
 ```
 

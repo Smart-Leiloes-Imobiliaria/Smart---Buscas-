@@ -3,6 +3,7 @@ import unittest
 from unittest.mock import patch
 
 from collectors.base import (
+    BlockedCollectorError,
     CollectorRuntime,
     PermanentCollectorError,
     TemporaryCollectorError,
@@ -98,6 +99,16 @@ class CollectorTests(unittest.TestCase):
         )
         with self.assertRaises(TemporaryCollectorError):
             runtime.ensure_active()
+
+    def test_blocked_portal_raises_retryable_error_with_collector_name(self):
+        driver = FakeDriver([])
+        driver.title = "Just a moment"
+        with self.assertRaisesRegex(BlockedCollectorError, "Viva Real"):
+            VivaRealCollector().collect(
+                driver,
+                {"city": "Belo Horizonte", "state": "MG", "transaction": "SALE"},
+                self.runtime(),
+            )
 
     def test_vivareal_builds_and_normalizes_a_property(self):
         raw = """

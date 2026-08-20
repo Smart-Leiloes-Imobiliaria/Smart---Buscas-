@@ -796,8 +796,7 @@ class VivaRealCollector(BaseCollector):
                 "O Viva Real não apresentou resultados no tempo esperado."
             ) from error
 
-    @staticmethod
-    def _raise_blocked(cause=None):
+    def _raise_blocked(self, cause=None):
         error = BlockedCollectorError(
             f"O {self.name} bloqueou temporariamente o acesso automatizado.",
             retry_after_seconds=float(
