@@ -54,7 +54,7 @@ def extract_parking_spaces(url: str):
     # Em muitos anúncios a URL só informa "com-garagem",
     # mas não informa quantas vagas existem.
     if "-com-garagem-" in url.lower():
-        return 1
+        return 0
 
     return None
 
@@ -419,6 +419,7 @@ def matches_search(property_data, search_params):
 
     def same_text(left, right):
         return slugify(left) == slugify(right)
+        
 
     city = search_params.get("city")
     if city and property_data.get("city") and not same_text(property_data["city"], city):
