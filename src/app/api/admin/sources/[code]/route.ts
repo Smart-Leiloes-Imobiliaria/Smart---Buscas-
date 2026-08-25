@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { ApiError, apiError } from "@/lib/api";
+import { requireAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 import { sourceUpdateSchema } from "@/lib/schemas";
 
@@ -12,6 +13,7 @@ export async function PATCH(
   context: { params: Promise<{ code: string }> },
 ) {
   try {
+    await requireAdmin();
     const { code } = await context.params;
     const changes = sourceUpdateSchema.parse(await request.json());
     const entries = Object.entries(changes);

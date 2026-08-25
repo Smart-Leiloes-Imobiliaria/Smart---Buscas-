@@ -7,7 +7,6 @@ export const portalSources = [
   { code: "vivareal", name: "Viva Real", domain: "vivareal.com.br", block: 1 },
   { code: "imovelweb", name: "Imovelweb", domain: "imovelweb.com.br", block: 1 },
   { code: "casamineira", name: "Casa Mineira", domain: "casamineira.com.br", block: 2 },
-  { code: "olx", name: "OLX Imóveis", domain: "olx.com.br", block: 2 },
   { code: "quintoandar", name: "QuintoAndar", domain: "quintoandar.com.br", block: 2 },
 ] as const;
 

@@ -65,7 +65,9 @@ export default async function HomePage({
         offset: 0,
       });
   const filterError = parsed.success ? undefined : parsed.error.issues[0]?.message;
-  const result = await getProperties(filters);
+  const result = parsed.success
+    ? await getProperties(filters)
+    : { properties: [], total: 0, limit: filters.limit, offset: filters.offset };
   const effectiveFilters = {
     ...filters,
     limit: result.limit,

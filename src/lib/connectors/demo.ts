@@ -102,6 +102,5 @@ export const demoConnectors: Record<string, PropertySourceConnector> = {
   vivareal: new DemoConnector("vivareal", 1.012, new Set(["buritis-1"])),
   imovelweb: new DemoConnector("imovelweb", 1, new Set(["func-1"])),
   casamineira: new DemoConnector("casamineira", 1.018, new Set(["sion-1"])),
-  olx: new DemoConnector("olx", 0.995, new Set(["lourdes-1"])),
   quintoandar: new DemoConnector("quintoandar", 1.035, new Set(["savassi-1"])),
 };

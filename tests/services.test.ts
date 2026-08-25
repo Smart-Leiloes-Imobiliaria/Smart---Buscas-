@@ -47,7 +47,7 @@ describe("fluxos essenciais com PostgreSQL", () => {
     const result = await database.query<{ total: number }>(
       "SELECT COUNT(*)::int AS total FROM source",
     );
-    expect(result.rows[0].total).toBe(8);
+    expect(result.rows[0].total).toBe(7);
   });
 
   it("busca, consolida e ranqueia imóveis de fontes diferentes", async () => {

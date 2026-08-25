@@ -20,6 +20,7 @@
     "db:status": "bash scripts/postgres-local.sh status",
     "db:migrate": "tsx scripts/migrate.ts",
     "demo:seed": "node --env-file-if-exists=.env.local --import tsx scripts/seed-demo.ts",
+    "auth:seed-admin": "node --env-file-if-exists=.env.local --import tsx scripts/seed-admin.ts",
     "collect": "node --env-file-if-exists=.env.local --import tsx scripts/collect.ts",
     "collector:worker": "set -a && . ./.env.local && set +a && .venv/bin/python scripts/collector-python/worker.py",
     "collector:once": "set -a && . ./.env.local && set +a && .venv/bin/python scripts/collector-python/worker.py --once",

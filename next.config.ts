@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   output: "standalone",
+  experimental: {
+    useTypeScriptCli: false,
+  },
   serverExternalPackages: ["pg"],
   images: {
     remotePatterns: [
@@ -17,7 +20,6 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "**.zapimoveis.com.br" },
       { protocol: "https", hostname: "**.imovelweb.com.br" },
       { protocol: "https", hostname: "**.casamineira.com.br" },
-      { protocol: "https", hostname: "**.olx.com.br" },
       { protocol: "https", hostname: "**.lopes.com.br" },
       { protocol: "https", hostname: "**.chavesnamao.com.br" },
     ],

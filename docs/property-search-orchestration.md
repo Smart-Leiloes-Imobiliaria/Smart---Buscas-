@@ -44,9 +44,8 @@ pesquisas pendentes diretamente no PostgreSQL. Use `npm run collector:once`
 para processar somente uma pesquisa.
 
 Os portais são selecionados por `COLLECTOR_SOURCES`. O registro contém Viva
-Real, ZAP Imóveis, Imovelweb, Casa Mineira, OLX Imóveis, QuintoAndar, Lopes e
-Chaves na Mão. O ambiente local habilita os adapters validados com coleta
-real:
+Real, ZAP Imóveis, Imovelweb, Casa Mineira, QuintoAndar, Lopes e Chaves na
+Mão. O ambiente local habilita os adapters validados com coleta real:
 
 ```text
 COLLECTOR_SOURCES=VIVAREAL,QUINTOANDAR,LOPES,CHAVESNAMAO
@@ -59,8 +58,8 @@ JSON-LD na página de busca; Chaves na Mão usa o JSON-LD `RealEstateListing`,
 filtrando apenas anúncios individuais (`/imovel/...`) e ignorando
 lançamentos, que trazem faixas de preço/quartos em vez de valores fechados.
 
-ZAP, Imovelweb, Casa Mineira e OLX já têm adapters implementados (mesma
-extração genérica via JSON-LD usada pelo Viva Real), mas no momento retornam
+ZAP, Imovelweb e Casa Mineira já têm adapters implementados (mesma extração
+genérica via JSON-LD usada pelo Viva Real), mas no momento retornam
 um desafio Cloudflare ("Attention Required" / "Um momento…") mesmo com Chrome
 real, a partir da rede usada em desenvolvimento — não foram habilitados por
 padrão porque a coleta não pôde ser validada como real. O collector detecta o

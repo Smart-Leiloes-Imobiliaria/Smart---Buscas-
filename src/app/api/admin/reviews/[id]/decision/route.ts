@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { ApiError, apiError } from "@/lib/api";
+import { requireAdmin } from "@/lib/auth/session";
 import { reviewDecisionSchema } from "@/lib/schemas";
 import { withTransaction } from "@/lib/db";
 
@@ -12,6 +13,7 @@ export async function POST(
   context: { params: Promise<{ id: string }> },
 ) {
   try {
+    await requireAdmin();
     const { id } = await context.params;
     const reviewId = Number(id);
     if (!Number.isInteger(reviewId)) throw new ApiError(422, "Revisão inválida");

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { apiError } from "@/lib/api";
+import { requireAdmin } from "@/lib/auth/session";
 import { db } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -8,6 +9,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
+    await requireAdmin();
     const database = await db();
     const counts: Record<string, number> = {};
     for (const table of ["source", "property", "listing", "search", "favorite", "review_queue", "job"]) {

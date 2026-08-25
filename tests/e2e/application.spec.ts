@@ -1,4 +1,76 @@
-import { expect, test } from "@playwright/test";
+import { expect, test, type Page } from "@playwright/test";
+
+const adminEmail = "admin.e2e@morada.local";
+const adminPassword = "AdminE2EPassword!123";
+const userEmail = "usuario.e2e@morada.local";
+const userPassword = "UserE2EPassword!123";
+
+async function login(page: Page, email: string, password: string) {
+  await page.goto("/login");
+  await page.getByLabel("E-mail").fill(email);
+  await page.getByLabel("Senha").fill(password);
+  await page.getByRole("button", { name: "Entrar" }).click();
+}
+
+async function fetchFromPage(page: Page, path: string) {
+  return page.evaluate(async (url) => {
+    const response = await fetch(url);
+    return { status: response.status, ok: response.ok, body: await response.json() };
+  }, path);
+}
+
+test("protege rotas e valida login, logout e permissões", async ({ page, request }) => {
+  await page.goto("/");
+  await expect(page).toHaveURL(/\/login\?next=%2F$/);
+  await expect(page.getByRole("heading", { name: "Acesse sua conta" })).toBeVisible();
+
+  const anonymousAdminApi = await request.get("/api/admin/users");
+  expect(anonymousAdminApi.status()).toBe(401);
+  await expect(anonymousAdminApi.json()).resolves.toMatchObject({
+    ok: false,
+    error: "Autenticação necessária.",
+  });
+
+  await page.getByLabel("E-mail").fill(adminEmail);
+  await page.getByLabel("Senha").fill("senha-incorreta");
+  await page.getByRole("button", { name: "Entrar" }).click();
+  await expect(page.getByText("E-mail ou senha incorretos.")).toBeVisible();
+  await expect(page).toHaveURL(/\/login/);
+
+  await login(page, adminEmail, adminPassword);
+  await expect(page).toHaveURL("/");
+  await expect(page.getByRole("link", { name: /Operação/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: /Acessos/ })).toBeVisible();
+
+  await page.getByRole("link", { name: /Acessos/ }).click();
+  await expect(page).toHaveURL("/admin/users");
+  await expect(page.getByRole("heading", { name: "Gerenciar acessos" })).toBeVisible();
+
+  const createdEmail = `usuario.criado.${Date.now()}@morada.local`;
+  await page.getByLabel("E-mail").fill(createdEmail);
+  await page.getByLabel("Senha").fill("SenhaCriadaE2E!123");
+  await page.getByRole("button", { name: "Criar usuário" }).click();
+  await expect(page.getByText("Usuário criado e liberado para acesso.")).toBeVisible();
+  await expect(page.getByText(createdEmail)).toBeVisible();
+
+  await page.getByRole("button", { name: "Sair da conta" }).click();
+  await expect(page).toHaveURL(/\/login/);
+
+  await login(page, userEmail, userPassword);
+  await expect(page).toHaveURL("/");
+  await expect(page.getByRole("link", { name: /Operação/ })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: /Acessos/ })).toHaveCount(0);
+
+  await page.goto("/admin/users");
+  await expect(page).toHaveURL("/");
+
+  const normalUserAdminApi = await fetchFromPage(page, "/api/admin/users");
+  expect(normalUserAdminApi.status).toBe(403);
+  expect(normalUserAdminApi.body).toMatchObject({
+    ok: false,
+    error: "Acesso administrativo necessário.",
+  });
+});
 
 test("consulta imóveis coletados no PostgreSQL pela página e API", async ({ page, request }) => {
   const health = await request.get("/api/health");
@@ -8,11 +80,15 @@ test("consulta imóveis coletados no PostgreSQL pela página e API", async ({ pa
     database: "postgresql",
   });
 
-  const propertiesResponse = await request.get(
+  await login(page, adminEmail, adminPassword);
+  await expect(page).toHaveURL("/");
+
+  const propertiesResponse = await fetchFromPage(
+    page,
     "/api/properties?city=Acrel%C3%A2ndia&state=AC&transaction=SALE",
   );
-  expect(propertiesResponse.ok()).toBe(true);
-  await expect(propertiesResponse.json()).resolves.toMatchObject({
+  expect(propertiesResponse.ok).toBe(true);
+  expect(propertiesResponse.body).toMatchObject({
     ok: true,
     count: 1,
     total: 1,

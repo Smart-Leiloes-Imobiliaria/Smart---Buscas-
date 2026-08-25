@@ -67,7 +67,7 @@ class CollectorTests(unittest.TestCase):
     def test_registry_enables_vivareal_by_default(self):
         self.assertEqual(
             [collector.source for collector in get_enabled_collectors()],
-            ["VIVAREAL"],
+            ["VIVAREAL", "QUINTOANDAR", "LOPES", "CHAVESNAMAO"],
         )
 
     def test_registry_can_enable_all_portals(self):
@@ -75,7 +75,7 @@ class CollectorTests(unittest.TestCase):
             "os.environ",
             {
                 "COLLECTOR_SOURCES": (
-                    "VIVAREAL,ZAP,IMOVELWEB,CASAMINEIRA,OLX,QUINTOANDAR"
+                    "VIVAREAL,ZAP,IMOVELWEB,CASAMINEIRA,QUINTOANDAR"
                 )
             },
         ):
@@ -86,7 +86,6 @@ class CollectorTests(unittest.TestCase):
                     "ZAP",
                     "IMOVELWEB",
                     "CASAMINEIRA",
-                    "OLX",
                     "QUINTOANDAR",
                 ],
             )

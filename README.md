@@ -28,6 +28,24 @@ npm run dev
 
 Acesse [http://localhost:3000](http://localhost:3000).
 
+## Acesso ao sistema
+
+Todas as páginas da aplicação exigem login. Não há cadastro público: o primeiro
+administrador é criado uma única vez por variável de ambiente e os demais
+usuários são criados em `/admin/users` pelo próprio administrador.
+
+Defina uma senha forte e crie a conta inicial depois de aplicar as migrações:
+
+```bash
+INITIAL_ADMIN_EMAIL=admin@suaempresa.com \
+INITIAL_ADMIN_PASSWORD='uma-senha-forte' \
+npm run auth:seed-admin
+```
+
+Em produção, configure `AUTH_SESSION_SECRET` com um valor aleatório longo no
+provedor de variáveis de ambiente. Não reutilize o valor de exemplo e não envie
+as credenciais iniciais ao repositório.
+
 Para executar como produção:
 
 ```bash
@@ -68,7 +86,7 @@ O antigo arquivo `data/morada.db` não é mais utilizado. Ele permanece apenas c
 As fontes estão organizadas em dois blocos:
 
 - Bloco 1: ZAP Imóveis, Viva Real e Imovelweb.
-- Bloco 2: Casa Mineira, OLX Imóveis e QuintoAndar.
+- Bloco 2: Casa Mineira e QuintoAndar.
 
 No ambiente local elas podem usar dados determinísticos para permitir o
 desenvolvimento. A carga demonstrativa é explícita:
@@ -88,7 +106,7 @@ O gateway autorizado continua disponível como alternativa. Configure-o em
 ```bash
 PORTAL_DATA_API_URL=https://seu-gateway.run.app
 PORTAL_DATA_API_TOKEN=...
-PORTAL_DATA_SOURCES=zap,vivareal,imovelweb,casamineira,olx,quintoandar
+PORTAL_DATA_SOURCES=zap,vivareal,imovelweb,casamineira,quintoandar
 ```
 
 Depois de reiniciar, a seção **Coleta dos portais** em `/admin` mostra o estado
@@ -161,6 +179,16 @@ Em produção, `PROPERTY_SEARCH_DISPATCH_MODE=cloud-tasks` faz o Next.js criar u
 tarefa HTTP autenticada para o serviço do coletor no Cloud Run. A imagem desse
 serviço é criada com `Dockerfile.collector-python`. A fila do Cloud Tasks e as
 permissões IAM precisam existir antes da ativação desse modo.
+
+Para produção, use:
+
+- Vercel para o app Next.js, com as variáveis de `.env.production.example`.
+- PostgreSQL gerenciado compartilhado pelo app e pelo coletor.
+- Cloud Run para o coletor Python/Selenium, com as variáveis de
+  `.env.collector.production.example`.
+
+O projeto fixa Node.js `v22.23.2` em `.nvmrc` e `.node-version`; a Vercel também
+respeita `engines.node` em `package.json`.
 
 ## API principal
 

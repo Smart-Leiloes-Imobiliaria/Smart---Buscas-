@@ -19,7 +19,6 @@ const sources = [
   ["vivareal", "Viva Real", "PORTAL_ADAPTER", "AUTHORIZED_GATEWAY", 90, 50, "DEMO"],
   ["imovelweb", "Imovelweb", "PORTAL_ADAPTER", "AUTHORIZED_GATEWAY", 80, 50, "DEMO"],
   ["casamineira", "Casa Mineira", "PORTAL_ADAPTER", "AUTHORIZED_GATEWAY", 70, 50, "DEMO"],
-  ["olx", "OLX Imóveis", "PORTAL_ADAPTER", "AUTHORIZED_GATEWAY", 60, 50, "DEMO"],
   ["quintoandar", "QuintoAndar", "PORTAL_ADAPTER", "AUTHORIZED_GATEWAY", 50, 50, "DEMO"],
   ["lopes", "Lopes", "PORTAL_ADAPTER", "AUTHORIZED_GATEWAY", 40, 50, "HEALTHY"],
   ["chavesnamao", "Chaves na Mão", "PORTAL_ADAPTER", "AUTHORIZED_GATEWAY", 30, 50, "HEALTHY"],

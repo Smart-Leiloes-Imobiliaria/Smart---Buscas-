@@ -17,11 +17,10 @@ describe("conectores dos portais", () => {
       "vivareal",
       "imovelweb",
       "casamineira",
-      "olx",
       "quintoandar",
     ]);
-    expect(portalSources.filter((source) => source.block === 2)).toHaveLength(3);
-    expect(Object.keys(getPortalConnectors())).toHaveLength(6);
+    expect(portalSources.filter((source) => source.block === 2)).toHaveLength(2);
+    expect(Object.keys(getPortalConnectors())).toHaveLength(5);
   });
 
   it("usa dados demonstrativos enquanto o gateway não está configurado", () => {

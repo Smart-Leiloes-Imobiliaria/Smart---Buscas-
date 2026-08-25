@@ -39,7 +39,7 @@ type PropertySearchResponse = {
 
 const statusCopy: Record<PropertySearchStatus, string> = {
   PENDING: "Aguardando o coletor",
-  RUNNING: "Buscando imóveis no Viva Real",
+  RUNNING: "Buscando imóveis nos portais",
   COMPLETED: "Busca concluída",
   FAILED: "A busca não pôde ser concluída",
 };

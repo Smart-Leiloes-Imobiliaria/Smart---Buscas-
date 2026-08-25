@@ -6,7 +6,6 @@ from collectors.lopes import LopesCollector
 from collectors.portals import (
     CasaMineiraCollector,
     ImovelwebCollector,
-    OlxCollector,
     QuintoAndarCollector,
     ZapCollector,
 )
@@ -18,7 +17,6 @@ COLLECTORS = {
     "ZAP": ZapCollector(),
     "IMOVELWEB": ImovelwebCollector(),
     "CASAMINEIRA": CasaMineiraCollector(),
-    "OLX": OlxCollector(),
     "QUINTOANDAR": QuintoAndarCollector(),
     "LOPES": LopesCollector(),
     "CHAVESNAMAO": ChavesNaMaoCollector(),
@@ -26,7 +24,10 @@ COLLECTORS = {
 
 
 def get_enabled_collectors():
-    configured = os.getenv("COLLECTOR_SOURCES", "VIVAREAL")
+    configured = os.getenv(
+        "COLLECTOR_SOURCES",
+        "VIVAREAL,QUINTOANDAR,LOPES,CHAVESNAMAO",
+    )
     source_codes = [
         value.strip().upper()
         for value in configured.split(",")
