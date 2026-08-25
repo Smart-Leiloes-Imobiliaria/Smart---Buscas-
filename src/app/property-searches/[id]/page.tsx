@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 import { ErrorState } from "@/components/error-state";
 import { LoadingState } from "@/components/loading-state";
+import { PropertyAveragesCard } from "@/components/property-averages-card";
 import { PropertyCard } from "@/components/property-card";
 import { api } from "@/lib/client-api";
 import type {
@@ -35,6 +36,7 @@ type PropertySearchResponse = {
   cachedResults: boolean;
   count: number;
   properties: PropertyCardData[];
+  sourceErrors?: string[];
 };
 
 const statusCopy: Record<PropertySearchStatus, string> = {
@@ -117,6 +119,14 @@ export default function PropertySearchPage() {
           </p>
         </div>
       </section>
+      {data.sourceErrors?.length ? (
+        <section className="search-status search-status-failed">
+          <div>
+            <strong>Algumas fontes não responderam</strong>
+            <p className="subtle">{data.sourceErrors.join(" ")}</p>
+          </div>
+        </section>
+      ) : null}
 
       <div className="section-head search-results-head">
         <div>
@@ -126,9 +136,14 @@ export default function PropertySearchPage() {
       </div>
 
       <section className="cards property-results">
-        {data.properties.length ? data.properties.map((item) => (
-          <PropertyCard item={item} key={item.id} />
-        )) : (
+        {data.properties.length ? (
+          <>
+            <PropertyAveragesCard properties={data.properties} />
+            {data.properties.map((item) => (
+              <PropertyCard item={item} key={item.id} />
+            ))}
+          </>
+        ) : (
           <div className="empty">
             <h3>{running ? "Buscando imóveis…" : "Nenhum imóvel encontrado"}</h3>
             <p className="subtle">{running ? "Esta página será atualizada automaticamente." : "Altere os filtros e tente novamente."}</p>

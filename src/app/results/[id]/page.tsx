@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 import { ErrorState } from "@/components/error-state";
 import { LoadingState } from "@/components/loading-state";
+import { PropertyAveragesCard } from "@/components/property-averages-card";
 import { PropertyCard, type PropertyCardItem } from "@/components/property-card";
 import { api, money } from "@/lib/client-api";
 
@@ -49,7 +50,12 @@ export default function ResultsPage() {
           <div className="field"><label>Vagas</label><span>{data.criteria.parking_spaces_min ? `${data.criteria.parking_spaces_min}+` : "Todas"}</span></div>
         </aside>
         <section className="cards">
-          {data.items.length ? data.items.map((item) => <PropertyCard item={item} key={item.id} />) : <div className="empty"><h3>Nenhum imóvel nesta combinação</h3><p className="subtle">Amplie a faixa de preço ou remova algum bairro.</p></div>}
+          {data.items.length ? (
+            <>
+              <PropertyAveragesCard properties={data.items} />
+              {data.items.map((item) => <PropertyCard item={item} key={item.id} />)}
+            </>
+          ) : <div className="empty"><h3>Nenhum imóvel nesta combinação</h3><p className="subtle">Amplie a faixa de preço ou remova algum bairro.</p></div>}
         </section>
       </div>
     </main>

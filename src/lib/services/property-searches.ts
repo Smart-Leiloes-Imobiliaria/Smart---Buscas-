@@ -160,10 +160,33 @@ export async function propertySearchProperties(
        LIMIT 100`,
       [search.id],
     );
+    const collected = result.rows.map((row) =>
+      serializeCollectorProperty(row, search.transaction),
+    );
+    const stored = await getProperties(
+      {
+        city: search.city,
+        state: search.state,
+        neighborhood: search.neighborhood ?? undefined,
+        transaction: search.transaction,
+        propertyType: search.propertyType ?? undefined,
+        minPrice: search.minPrice ?? undefined,
+        maxPrice: search.maxPrice ?? undefined,
+        minArea: search.minArea ?? undefined,
+        maxArea: search.maxArea ?? undefined,
+        bedrooms: search.bedrooms ?? undefined,
+        limit: 100,
+      },
+      database,
+    );
+    const merged = new Map<number, CollectorProperty>();
+    for (const property of collected) merged.set(property.id, property);
+    for (const property of stored.properties) {
+      if (!merged.has(property.id)) merged.set(property.id, property);
+    }
+
     return {
-      properties: result.rows.map((row) =>
-        serializeCollectorProperty(row, search.transaction),
-      ),
+      properties: [...merged.values()],
       cached: false,
     };
   }

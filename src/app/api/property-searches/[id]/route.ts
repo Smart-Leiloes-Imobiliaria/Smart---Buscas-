@@ -3,6 +3,7 @@ import { z } from "zod";
 
 import { db } from "@/lib/db";
 import { collectorPropertyToCardData } from "@/lib/property-card-data";
+import { searchMongoProperties } from "@/lib/services/mongo-property-source";
 import {
   findPropertySearch,
   propertySearchProperties,
@@ -31,13 +32,21 @@ export async function GET(
         { status: 404 },
       );
     }
-    const result = await propertySearchProperties(database, search);
+    const [result, mongoResult] = await Promise.all([
+      propertySearchProperties(database, search),
+      searchMongoProperties(search),
+    ]);
+    const properties = [
+      ...mongoResult.properties,
+      ...result.properties.map(collectorPropertyToCardData),
+    ];
     return NextResponse.json({
       ok: true,
       search,
       cachedResults: result.cached,
-      count: result.properties.length,
-      properties: result.properties.map(collectorPropertyToCardData),
+      count: properties.length,
+      properties,
+      sourceErrors: mongoResult.error ? [mongoResult.error] : [],
     });
   } catch (error) {
     console.error(error);
