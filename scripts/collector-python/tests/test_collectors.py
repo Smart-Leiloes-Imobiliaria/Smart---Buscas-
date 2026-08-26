@@ -67,7 +67,7 @@ class CollectorTests(unittest.TestCase):
     def test_registry_enables_vivareal_by_default(self):
         self.assertEqual(
             [collector.source for collector in get_enabled_collectors()],
-            ["VIVAREAL", "QUINTOANDAR", "LOPES", "CHAVESNAMAO"],
+            ["MONGO", "VIVAREAL", "QUINTOANDAR", "LOPES", "CHAVESNAMAO"],
         )
 
     def test_registry_can_enable_all_portals(self):

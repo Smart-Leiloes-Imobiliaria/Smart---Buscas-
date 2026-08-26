@@ -131,12 +131,13 @@ def link_property_search_results(search_id, properties):
         return [row["property_id"] for row in cur.fetchall()]
 
 
-def complete_property_search(search_id, properties_found):
+def complete_property_search(search_id, properties_found, error_message=None):
     with get_connection() as conn, conn.cursor() as cur:
         cur.execute("""UPDATE property_searches SET status='COMPLETED', properties_found=%s,
           completed_at=CURRENT_TIMESTAMP, last_heartbeat_at=CURRENT_TIMESTAMP,
-          updated_at=CURRENT_TIMESTAMP WHERE id=%s AND status='RUNNING'""",
-                    (properties_found, search_id))
+          updated_at=CURRENT_TIMESTAMP, error_message=%s
+          WHERE id=%s AND status='RUNNING'""",
+                    (properties_found, error_message, search_id))
 
 
 def retry_property_search(search_id, error, delay_seconds):

@@ -133,7 +133,8 @@ def process_property_search(search_id=None):
             driver = None
 
             try:
-                driver = create_browser()
+                if getattr(collector, "uses_browser", True):
+                    driver = create_browser()
                 properties = collector.collect(driver, criteria, runtime)
                 properties = properties[: collector.result_limit]
                 print(f"{collector.name}: {len(properties)} imóveis compatíveis.")
@@ -168,7 +169,8 @@ def process_property_search(search_id=None):
         if collector_errors:
             print(
                 f"Pesquisa {claimed_id}: concluindo parcialmente; "
-                f"{len(collector_errors)} portal(is) indisponível(is)."
+                f"{len(collector_errors)} fonte(s) indisponível(is): "
+                + " | ".join(str(error) for error in collector_errors)
             )
 
         heartbeat_property_search(claimed_id)
@@ -179,7 +181,20 @@ def process_property_search(search_id=None):
                 f"Pesquisa {claimed_id}: {len(duplicates)} duplicidade(s) entre portais removida(s)."
             )
         property_ids = link_property_search_results(claimed_id, display_properties)
-        complete_property_search(claimed_id, len(property_ids))
+        partial_error = None
+        if collector_errors:
+            partial_error = (
+                "Coleta concluída parcialmente. Fontes com problema: "
+                + " | ".join(str(error) for error in collector_errors)
+            )[:2000]
+        if partial_error:
+            complete_property_search(
+                claimed_id,
+                len(property_ids),
+                partial_error,
+            )
+        else:
+            complete_property_search(claimed_id, len(property_ids))
         print(f"Pesquisa {claimed_id} concluída com {len(property_ids)} imóveis.")
         return {
             "search_id": claimed_id,

@@ -36,6 +36,15 @@ type MongoPropertyCandidate = {
 export type MongoPropertySourceResult = {
   properties: PropertyCardData[];
   error?: string;
+  status?:
+      | "DISABLED"
+      | "IN_COLLECTOR"
+      | "CONNECTED"
+    | "EMPTY_COLLECTION"
+    | "NO_MATCHES"
+    | "EMPTY_AFTER_FILTERING"
+    | "ERROR";
+  detail?: string;
 };
 
 let clientPromise: Promise<MongoClient> | undefined;
@@ -49,7 +58,13 @@ export async function searchMongoProperties(
   limit = 3,
 ): Promise<MongoPropertySourceResult> {
   const uri = process.env.MONGODB_URI?.trim();
-  if (!uri) return { properties: [] };
+  if (!uri) {
+    return {
+      properties: [],
+      status: "DISABLED",
+      detail: "MONGODB_URI não configurado neste ambiente.",
+    };
+  }
 
   return withTimeout(searchMongoPropertiesUnsafe(uri, search, limit), mongoTimeoutMs() + 1_000)
     .catch((error) => {
@@ -57,7 +72,9 @@ export async function searchMongoProperties(
       console.error("Fonte MongoDB indisponível:", message);
       return {
         properties: [],
+        status: "ERROR",
         error: "Banco interno indisponível no momento.",
+        detail: message,
       };
     });
 }
@@ -70,7 +87,17 @@ async function searchMongoPropertiesUnsafe(
     const client = await mongoClient(uri);
     const database = client.db(process.env.MONGODB_DATABASE?.trim() || DEFAULT_DATABASE);
     const collectionName = await resolveCollectionName(database);
-    if (!collectionName) return { properties: [] };
+    if (!collectionName) {
+      const configuredCollection = process.env.MONGODB_PROPERTIES_COLLECTION?.trim();
+      return {
+        properties: [],
+        status: "EMPTY_COLLECTION",
+        detail:
+          configuredCollection
+            ? `A coleção configurada "${configuredCollection}" não existe no banco selecionado.`
+            : "Nenhuma coleção candidata encontrada. Verifique MONGODB_PROPERTIES_COLLECTION ou os nomes padrão (imoveis, properties, real_estate_properties, listings, anuncios).",
+      };
+    }
 
     const collection = database.collection(collectionName);
     const candidates = await collection
@@ -80,6 +107,14 @@ async function searchMongoPropertiesUnsafe(
         projection: mongoPropertyProjection(),
       })
       .toArray();
+
+    if (!candidates.length) {
+      return {
+        properties: [],
+        status: "NO_MATCHES",
+        detail: `A coleção "${collectionName}" respondeu, mas nenhum documento bateu com cidade/estado/bairro e filtros da pesquisa.`,
+      };
+    }
 
     const ranked = candidates
       .filter(isAvailableMongoProperty)
@@ -93,10 +128,20 @@ async function searchMongoPropertiesUnsafe(
       .sort((a, b) => b.score - a.score)
       .slice(0, limit);
 
+    if (!ranked.length) {
+      return {
+        properties: [],
+        status: "EMPTY_AFTER_FILTERING",
+        detail: `A coleção "${collectionName}" retornou ${candidates.length} documento(s), mas nenhum passou na validação de disponibilidade ou ranqueamento.`,
+      };
+    }
+
     return {
       properties: ranked.map(({ property, score }) =>
         mongoPropertyToCardData(property, score),
       ),
+      status: "CONNECTED",
+      detail: `Consulta concluída na coleção "${collectionName}" com ${ranked.length} resultado(s) úteis.`,
     };
 }
 
@@ -172,7 +217,15 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T
     return await Promise.race([
       promise,
       new Promise<never>((_, reject) => {
-        timer = setTimeout(() => reject(new Error("Tempo limite da fonte MongoDB excedido")), timeoutMs);
+        timer = setTimeout(
+          () =>
+            reject(
+              new Error(
+                `Tempo limite da fonte MongoDB excedido após ${timeoutMs}ms`,
+              ),
+            ),
+          timeoutMs,
+        );
       }),
     ]);
   } finally {
@@ -182,14 +235,30 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T
 
 async function resolveCollectionName(database: ReturnType<MongoClient["db"]>) {
   const configured = process.env.MONGODB_PROPERTIES_COLLECTION?.trim();
-  if (configured) return configured;
+  if (configured) {
+    try {
+      const exists = await database
+        .listCollections({ name: configured }, { nameOnly: true })
+        .hasNext();
+      return exists ? configured : null;
+    } catch (error) {
+      if (isUnauthorizedMongoError(error)) return configured;
+      throw error;
+    }
+  }
 
   for (const name of DEFAULT_COLLECTION_CANDIDATES) {
     try {
-      await database.collection(name).findOne({}, { projection: { _id: 1 } });
-      return name;
+      const exists = await database
+        .listCollections({ name }, { nameOnly: true })
+        .hasNext();
+      if (exists) return name;
     } catch (error) {
       if (!isUnauthorizedMongoError(error)) throw error;
+
+      // Read-only users may query collections without listing their names.
+      await database.collection(name).findOne({}, { projection: { _id: 1 } });
+      return name;
     }
   }
   return null;

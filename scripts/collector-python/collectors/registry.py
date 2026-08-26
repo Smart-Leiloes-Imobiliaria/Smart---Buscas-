@@ -3,6 +3,7 @@ import os
 from collectors.base import PermanentCollectorError
 from collectors.chavesnamao import ChavesNaMaoCollector
 from collectors.lopes import LopesCollector
+from collectors.mongo import MongoCollector
 from collectors.portals import (
     CasaMineiraCollector,
     ImovelwebCollector,
@@ -13,6 +14,7 @@ from collectors.vivareal import VivaRealCollector
 
 
 COLLECTORS = {
+    "MONGO": MongoCollector(),
     "VIVAREAL": VivaRealCollector(),
     "ZAP": ZapCollector(),
     "IMOVELWEB": ImovelwebCollector(),
@@ -26,7 +28,7 @@ COLLECTORS = {
 def get_enabled_collectors():
     configured = os.getenv(
         "COLLECTOR_SOURCES",
-        "VIVAREAL,QUINTOANDAR,LOPES,CHAVESNAMAO",
+        "MONGO,VIVAREAL,QUINTOANDAR,LOPES,CHAVESNAMAO",
     )
     source_codes = [
         value.strip().upper()
@@ -36,7 +38,7 @@ def get_enabled_collectors():
 
     if not source_codes:
         raise PermanentCollectorError(
-            "COLLECTOR_SOURCES deve habilitar ao menos um portal."
+            "COLLECTOR_SOURCES deve habilitar ao menos uma fonte."
         )
 
     unknown = [code for code in source_codes if code not in COLLECTORS]

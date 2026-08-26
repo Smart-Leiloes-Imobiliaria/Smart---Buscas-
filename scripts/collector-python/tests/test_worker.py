@@ -194,7 +194,11 @@ class WorkerTests(unittest.TestCase):
             result = worker.process_property_search("search-id")
 
         self.assertEqual(result["status"], "COMPLETED")
-        complete.assert_called_once_with(search()["id"], 1)
+        complete.assert_called_once_with(
+            search()["id"],
+            1,
+            "Coleta concluída parcialmente. Fontes com problema: blocked",
+        )
         retry.assert_not_called()
         fail.assert_not_called()
 
