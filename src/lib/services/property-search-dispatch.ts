@@ -1,4 +1,4 @@
-import { GoogleAuth } from "google-auth-library";
+import { googleCloudAuth } from "@/lib/google-auth";
 
 export type PropertySearchDispatchMode = "database" | "cloud-tasks";
 
@@ -27,9 +27,7 @@ export async function dispatchPropertySearch(searchId: string) {
   const parent = `projects/${project}/locations/${location}/queues/${queue}`;
   const body = Buffer.from(JSON.stringify({ searchId })).toString("base64");
   const target = `${collectorUrl.replace(/\/$/, "")}/jobs`;
-  const auth = new GoogleAuth({
-    scopes: ["https://www.googleapis.com/auth/cloud-platform"],
-  });
+  const auth = googleCloudAuth();
   const client = await auth.getClient();
   await client.request({
     url: `https://cloudtasks.googleapis.com/v2/${parent}/tasks`,

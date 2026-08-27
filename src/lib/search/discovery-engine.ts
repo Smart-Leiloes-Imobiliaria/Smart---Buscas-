@@ -1,5 +1,4 @@
-import { GoogleAuth } from "google-auth-library";
-
+import { googleCloudAuth } from "@/lib/google-auth";
 import {
   SEARCH_PROPERTY_JSON_SCHEMA,
   type DiscoveryEnginePropertyDocument,
@@ -9,7 +8,6 @@ import {
 import type { SearchCriteria } from "@/lib/schemas";
 
 const DISCOVERY_ENGINE_API = "https://discoveryengine.googleapis.com/v1";
-const CLOUD_PLATFORM_SCOPE = "https://www.googleapis.com/auth/cloud-platform";
 
 export type DiscoveryEngineSettings = {
   projectId: string;
@@ -218,10 +216,10 @@ export function propertySearchFilter(criteria: SearchCriteria) {
 const escapeFilterValue = (value: string) =>
   value.replaceAll("\\", "\\\\").replaceAll('"', '\\"');
 
-let googleAuth: GoogleAuth | undefined;
+let googleAuth: ReturnType<typeof googleCloudAuth> | undefined;
 
 async function defaultAccessToken() {
-  googleAuth ??= new GoogleAuth({ scopes: [CLOUD_PLATFORM_SCOPE] });
+  googleAuth ??= googleCloudAuth();
   const token = await googleAuth.getAccessToken();
   if (!token) throw new Error("Não foi possível obter credenciais do Google Cloud");
   return token;
