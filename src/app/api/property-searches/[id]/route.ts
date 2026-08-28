@@ -81,7 +81,6 @@ export async function GET(
       properties,
       sourceErrors: [
         ...(mongoResult.error ? [mongoResult.error] : []),
-        ...(search.error ? [search.error] : []),
       ],
       mongoSource,
     });
