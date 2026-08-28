@@ -80,7 +80,7 @@ export async function GET(
       count: properties.length,
       properties,
       sourceErrors: [
-        ...(mongoResult.error ? [mongoResult.error] : []),
+        ...(effectiveMongoResult.error ? [effectiveMongoResult.error] : []),
       ],
       mongoSource,
     });

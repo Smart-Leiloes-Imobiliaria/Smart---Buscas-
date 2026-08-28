@@ -115,6 +115,34 @@ describe("fluxos essenciais com PostgreSQL", () => {
     expect(repeated.search.status).toBe("PENDING");
   });
 
+  it("expira uma pesquisa ativa antiga antes de criar outra igual", async () => {
+    const criteria = {
+      city: "Belo Horizonte",
+      state: "MG",
+      transaction: "SALE" as const,
+      propertyType: "APARTMENT",
+      bedrooms: 2,
+      minPrice: 300000,
+      maxPrice: 600000,
+    };
+    const first = await createPropertySearch(criteria);
+    await database.query(
+      `UPDATE property_searches
+       SET created_at=CURRENT_TIMESTAMP - INTERVAL '30 minutes',
+           updated_at=CURRENT_TIMESTAMP - INTERVAL '30 minutes'
+       WHERE id=$1`,
+      [first.search.id],
+    );
+
+    const repeated = await createPropertySearch(criteria);
+    const expired = await findPropertySearch(database, first.search.id);
+
+    expect(repeated).toMatchObject({ created: true, cacheHit: false });
+    expect(repeated.search.id).not.toBe(first.search.id);
+    expect(expired?.status).toBe("FAILED");
+    expect(expired?.error).toContain("Pesquisa expirada automaticamente");
+  });
+
   it("mantém imóveis armazenados compatíveis após a coleta concluir", async () => {
     const criteria = {
       city: "Belo Horizonte",

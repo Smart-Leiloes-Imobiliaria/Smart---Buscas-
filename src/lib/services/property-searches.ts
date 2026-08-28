@@ -14,6 +14,7 @@ import type {
 } from "@/lib/types";
 
 const collectorVersion = "multi-portal-v9";
+const DEFAULT_ACTIVE_STALE_MINUTES = 15;
 
 const normalizedText = (value: string | undefined) =>
   value
@@ -64,11 +65,15 @@ export async function createPropertySearch(criteria: PropertySearchRequest) {
     Number(process.env.PROPERTY_SEARCH_CACHE_MINUTES ?? 10),
   );
   const cacheCutoff = new Date(Date.now() - cacheMinutes * 60_000);
+  const staleCutoff = new Date(
+    Date.now() - activeSearchStaleMinutes() * 60_000,
+  );
 
   return withTransaction(async (database) => {
     await database.query("SELECT pg_advisory_xact_lock(hashtext($1))", [
       `property-search-${searchKey}`,
     ]);
+    await failStaleActivePropertySearches(database, searchKey, staleCutoff);
     const active = await database.query<PropertySearchRow>(
       `SELECT * FROM property_searches
        WHERE search_key=$1 AND status IN ('PENDING', 'RUNNING')
@@ -131,6 +136,28 @@ export async function createPropertySearch(criteria: PropertySearchRequest) {
       cacheHit: false,
     };
   });
+}
+
+async function failStaleActivePropertySearches(
+  database: SqlExecutor,
+  searchKey: string,
+  staleCutoff: Date,
+) {
+  await database.query(
+    `UPDATE property_searches SET
+       status='FAILED',
+       error_message='Pesquisa expirada automaticamente: o coletor não iniciou ou parou de responder dentro do tempo limite.',
+       completed_at=CURRENT_TIMESTAMP,
+       updated_at=CURRENT_TIMESTAMP
+     WHERE search_key=$1
+       AND status IN ('PENDING', 'RUNNING')
+       AND (
+         (status='PENDING' AND created_at < $2)
+         OR
+         (status='RUNNING' AND COALESCE(last_heartbeat_at, started_at, updated_at) < $2)
+       )`,
+    [searchKey, staleCutoff],
+  );
 }
 
 export async function findPropertySearch(
@@ -215,6 +242,17 @@ const numberOrNull = (value: number | string | null) =>
 
 const isoOrNull = (value: Date | string | null) =>
   value == null ? null : new Date(value).toISOString();
+
+function activeSearchStaleMinutes() {
+  const configured = Number(
+    process.env.PROPERTY_SEARCH_ACTIVE_STALE_MINUTES ??
+      DEFAULT_ACTIVE_STALE_MINUTES,
+  );
+  if (!Number.isFinite(configured) || configured <= 0) {
+    return DEFAULT_ACTIVE_STALE_MINUTES;
+  }
+  return configured;
+}
 
 function serializePropertySearch(row: PropertySearchRow) {
   return {

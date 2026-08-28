@@ -69,7 +69,7 @@ export async function POST(request: Request) {
       {
         ok: true,
         searchId: result.search.id,
-        status: result.search.status,
+        status: dispatchError ? "FAILED" : result.search.status,
         cacheHit: result.cacheHit,
         reused: !result.created,
         dispatchMode: propertySearchDispatchMode(),
