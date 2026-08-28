@@ -9,8 +9,10 @@ export async function api<T>(url: string, options: RequestInit = {}): Promise<T>
       detail?: string;
       error?: string;
     };
+    const message =
+      body.error ?? body.detail ?? "Não foi possível concluir a operação";
     throw new Error(
-      body.error ?? body.detail ?? "Não foi possível concluir a operação",
+      body.detail && body.error ? `${message}: ${body.detail}` : message,
     );
   }
   return response.json() as Promise<T>;

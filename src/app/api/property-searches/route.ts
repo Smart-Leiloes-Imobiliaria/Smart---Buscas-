@@ -76,9 +76,14 @@ export async function POST(request: Request) {
       { status: result.created ? 202 : 200 },
     );
   } catch (error) {
-    console.error(error);
+    const detail = error instanceof Error ? error.message : String(error);
+    console.error("Property search start failed:", error);
     return NextResponse.json(
-      { ok: false, error: "Não foi possível iniciar a pesquisa" },
+      {
+        ok: false,
+        error: "Não foi possível iniciar a pesquisa",
+        ...(process.env.NODE_ENV !== "production" ? { detail } : {}),
+      },
       { status: 500 },
     );
   }
