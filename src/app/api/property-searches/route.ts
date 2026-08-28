@@ -49,18 +49,19 @@ export async function POST(request: Request) {
       ...parsed.data,
       city: municipality.name,
     });
+    let dispatchError: string | undefined;
     if (result.created) {
       try {
         await dispatchPropertySearch(result.search.id);
       } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
+        dispatchError = error instanceof Error ? error.message : String(error);
+        console.error("Property search dispatch failed:", error);
         await (await db()).query(
           `UPDATE property_searches SET status='FAILED', error_message=$1,
            completed_at=CURRENT_TIMESTAMP, updated_at=CURRENT_TIMESTAMP
            WHERE id=$2 AND status='PENDING'`,
-          [message.slice(0, 2000), result.search.id],
+          [dispatchError.slice(0, 2000), result.search.id],
         );
-        throw error;
       }
     }
 
@@ -72,6 +73,7 @@ export async function POST(request: Request) {
         cacheHit: result.cacheHit,
         reused: !result.created,
         dispatchMode: propertySearchDispatchMode(),
+        dispatchError,
       },
       { status: result.created ? 202 : 200 },
     );
