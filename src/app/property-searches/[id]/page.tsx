@@ -147,7 +147,7 @@ export default function PropertySearchPage() {
               : data.search.status === "COMPLETED"
                 ? isAuction
                   ? `${data.count} imóveis de leilão encontrados no banco interno.`
-                  : `${data.search.propertiesFound} imóveis encontrados nesta coleta.`
+                  : `${data.count} imóveis encontrados nesta coleta.`
                 : data.search.error || "Tente iniciar uma nova pesquisa."}
           </p>
         </div>

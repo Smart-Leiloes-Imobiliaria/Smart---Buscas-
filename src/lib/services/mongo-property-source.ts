@@ -55,7 +55,7 @@ export function resetMongoPropertySourceForTests() {
 
 export async function searchMongoProperties(
   search: PropertySearch,
-  limit = 3,
+  limit = 6,
 ): Promise<MongoPropertySourceResult> {
   const uri = process.env.MONGODB_URI?.trim();
   if (!uri) {

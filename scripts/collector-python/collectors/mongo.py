@@ -18,7 +18,7 @@ DEFAULT_COLLECTION_CANDIDATES = (
 class MongoCollector(BaseCollector):
     source = "MONGO"
     name = "MongoDB"
-    result_limit = 3
+    result_limit = 6
     uses_browser = False
 
     def build_search_url(self, criteria):

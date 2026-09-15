@@ -87,7 +87,7 @@ class CollectorRuntime:
 class BaseCollector(ABC):
     source: str
     name: str
-    result_limit = 3
+    result_limit = 6
 
     @abstractmethod
     def build_search_url(self, criteria):
